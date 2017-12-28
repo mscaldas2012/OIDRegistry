@@ -1,0 +1,223 @@
+swagger: "2.0"
+info:
+ description: "Service to Register and provide management for Object identifiers. Extra OID info @ http://www.oid-info.com/"
+ version: "1.0.0"
+ title: "OID Registry"
+host: "localhost:8080"
+basePath: "/oidRegistry/v1"
+
+schemes:
+- "http"
+tags:
+  - name: OID_NODE
+    description: Node related endpoints
+  - name: GENERATOR
+    description: OID Generator related endpoints
+
+
+paths:
+
+ /object:
+   post:
+     tags:
+      - OID_NODE
+     summary: Register a new OIDNode. Need to recieve full OID
+     responses:
+       200:
+         description: The Object that matches the given OID
+       400:
+         description: Invalid Request. Need to pass OID when registering a node.
+       422:
+         description: Cannot Register Node because the OID already exists or the parent node has a Generator associated with it, in which case children nodes must be generated.
+
+
+ /object/{OID}:
+   parameters:
+   - in: path
+     name: OID
+     type: string
+     required: true
+     description: The OID for the Node we are retrieving
+   get:
+     tags:
+      - OID_NODE
+     summary: Retrieves a single Object Node denoted by OID
+     responses:
+       200:
+         description: The Object that matches the given OID
+   put:
+     tags:
+      - OID_NODE
+     summary: Updates the given OID Node
+     responses:
+       200:
+         description: The Object that matches the given OID
+       409:
+         description: Conflict. Stale version or other conflict.
+   delete:
+     tags:
+      - OID_NODE
+     summary: Removes the givne Node. If has children, all children will be removed as well.
+     responses:
+       200:
+         description: The Object that matches the given OID
+       409:
+         description: Conflict. Stale version or other conflict.
+
+
+ /object/{OID}/children:
+   parameters:
+   - in: path
+     name: OID
+     type: string
+     required: true
+     description: The OID for the Node we are retrieving
+   get:
+     tags:
+      - OID_NODE
+     summary: Retrieves all Children (Paginated) for the given OID
+     responses:
+       200:
+         description: The Object that matches the given OID
+
+
+ /object/search:
+   get:
+     tags:
+      - OID_NODE
+     summary: Retrieves OID Nodes based on various criteria.
+     parameters:
+     - in: query
+       name: bizKey
+       type: string
+       required: false
+       description: A Business Key associated with an OID.
+     responses:
+       200:
+         description: A List of OID Nodes that match the provided filters.
+
+ /object/{OID}/search:
+   parameters:
+   - in: path
+     name: OID
+     type: string
+     required: true
+     description: The OID for the Node we are retrieving
+   get:
+     tags:
+      - OID_NODE
+     summary: Retrieves OID Nodes childnre of {OID} based on filters
+     responses:
+       200:
+         description: The Object that matches the given OID
+
+
+ /generator/{OID}:
+   parameters:
+   - in: path
+     name: OID
+     type: string
+     required: true
+     description: The OID for the Node the OID Generator is attached to.
+   get:
+     tags:
+      - GENERATOR
+     summary: Retrieves the Generator metdata for the given Node.
+     responses:
+       200:
+         description: The Object that matches the given OID
+   post:
+     tags:
+      - GENERATOR
+     summary: Creates a new Generator for a given Node.
+     responses:
+       201:
+         description: The Object that matches the given OID
+   put:
+     tags:
+      - GENERATOR
+     summary: Updates a generator metadata for a given Node.
+     responses:
+       200:
+         description: The Object that matches the given OID
+       409:
+         description: Conflict. Stale version or other conflict.
+   delete:
+     tags:
+      - GENERATOR
+     summary: Deletes a generator metadata.
+     responses:
+       200:
+         description: The Object that matches the given OID
+       409:
+         description: Conflict. Stale version or other conflict.
+
+ /generator/{OID}/generate:
+   parameters:
+   - in: path
+     name: OID
+     type: string
+     required: true
+     description: The OID for the Node we are retrieving
+   post:
+     tags:
+      - GENERATOR
+     summary: Generates a new Child Node for a given OID Node (with Generator Metadata associated)
+     responses:
+       200:
+         description: The Object that matches the given OID
+       400:
+         description: Invalid Request. Missing parameters or invalid payload.
+       422:
+         description: Invalid Node. The Parent Node does not have a Generator Metadata associated.
+
+
+
+definitions:
+ OidNode:
+   type: object
+   properties:
+     oid:
+       type: string
+       description: Full OID identifier
+     category:
+       type: string
+       description: the category this Node belongs to. (Usually all siblings have the same category)
+     description:
+       type: string
+       description: A description of this OID
+     bizKeys:
+       type: array
+       items:
+         type: string
+       description: IF this OID is recognized by any constant or business key
+     parent:
+       $ref: '#/definitions/OidNode'
+       description: The Parent Node for this OID. Null only for Root Elements
+     duplicateOf:
+       $ref: '#/definitions/OidNode'
+       description: IF this node is flagged as duplicate, what's the master Node!
+     version:
+       type: integer
+       default: 1
+       description: Keeps track of versioning for optmistic locking mechanisms
+
+ OidGeneratorMetadata:
+   type: object
+   properties:
+     nextChildSeqNumber:
+       type: integer
+       description: counter for the next OID to be generated
+     node:
+       $ref: '#/definitions/OidNode'
+       description: The Node this Generator is attached to. (The parent of all children nodes generated.)
+     allowKeyUpdates:
+       type: boolean
+       description: Whether the business keys can be updated for these Nodes.
+     bizKeyDelimiter:
+       type: string
+       description: The character(s) used as delimiters for multiple fields of a business key.
+     version:
+       type: integer
+       default: 1
+       description: Keeps track of versioning for optmistic locking mechanisms
