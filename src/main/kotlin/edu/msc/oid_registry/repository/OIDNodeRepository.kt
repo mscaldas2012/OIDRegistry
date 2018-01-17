@@ -4,6 +4,7 @@ import edu.msc.oid_registry.model.OIDNode
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import java.util.*
 import javax.transaction.Transactional
 
 /**
@@ -21,5 +22,5 @@ interface OIDNodeRepository : CrudRepository<OIDNode, String> {
     fun findByBizKey(bizKey: String): List<OIDNode>
 
     @Query("from OIDNode n where n.oid like :parentOID%  and n.bizKey = :bizKey")
-    fun findByBizKeyAndParentOid(parentOID: String, bizKey: String): OIDNode
+    fun findByBizKeyAndParentOid(parentOID: String, bizKey: String): Optional<OIDNode>?
 }

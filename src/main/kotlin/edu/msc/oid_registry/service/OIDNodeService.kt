@@ -17,13 +17,15 @@ import javax.transaction.Transactional
 class OIDNodeService(val repo: OIDNodeRepository) {
 
     fun registerNewOid(node: OIDNode):OIDNode {
+        //TODO::See if there's no Generator for the parent of this Node.
+        //  If there is, force user to use Generator.createNewNode
         return repo.save(node)
     }
 
     fun getNode(oid: String): Optional<OIDNode>? {
         return repo.findById(oid)
     }
-
+    //This method is to be called only by the Generator, if it allows the Biz Key to be udpated.
     fun updateNode(node: OIDNode): OIDNode {
         return repo.save(node)
     }
@@ -32,17 +34,18 @@ class OIDNodeService(val repo: OIDNodeRepository) {
         repo.deleteById(oid)
     }
 
-    fun getChildrenOf(oid: String): List<OIDNode> {
-        return repo.findByOidStartsWith(oid)
+    fun getChildrenOf(parentOID: String): List<OIDNode> {
+        val parentOIDWithSeg = if (parentOID.endsWith("."))  parentOID else parentOID + ".";
+        return repo.findByOidStartsWith(parentOIDWithSeg)
     }
 
     fun getNodesByBizKey(bizKey: String): List<OIDNode> {
         return repo.findByBizKey(bizKey)
     }
 
-    fun getChildrenNodeByBizKey(parentOID: String, bizKey: String): OIDNode {
+    fun getChildrenNodeByBizKey(parentOID: String, bizKey: String): Optional<OIDNode>? {
        //Make sure there's a dot at thend so not to get other branches!
-        var parentOIDWithSeg = if (parentOID.endsWith("."))  parentOID else parentOID + ".";
+        val parentOIDWithSeg = if (parentOID.endsWith("."))  parentOID else parentOID + ".";
         return repo.findByBizKeyAndParentOid(parentOIDWithSeg, bizKey)
     }
 

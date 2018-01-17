@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
+import java.util.*
 
 /**
  * @Created - 12/24/17
@@ -19,35 +20,7 @@ class OIDNodeServiceTest {
     @Autowired
     lateinit var service: OIDNodeService
 
-    val emojis = mapOf(
-            ":-)" to "Smiley",
-            ":-D" to "Kaugthing",
-            ":v" to "Unenthused",
-            ":-))" to "Very Happy",
-            ":'-(" to "Crying",
-            ":-O" to "Suprise",
-            ":-*" to "Kiss",
-            ";-)" to "Wink")
 
-
-    private fun createNode(oid: String, bizKey: String, description: String):OIDNode {
-        val newNode = OIDNode(oid, bizKey)
-        newNode.description = description
-        val saved = service.registerNewOid(newNode);
-        return saved
-    }
-
-    private fun registerAlphabetOids(prefix: String) {
-        for (i in (1..26)) {
-            val character = (i+64).toChar() + ""
-            createNode(prefix + i, character, character)
-        }
-    }
-
-    private fun registerEmoticons(prefix: String) {
-        var i = 1
-        emojis.forEach { key, value -> createNode(prefix + i++, key, value)}
-    }
 
     @Test
     fun registerNewOid() {
@@ -113,4 +86,44 @@ class OIDNodeServiceTest {
         val letterT = service.getChildrenNodeByBizKey("6.1", "T")
         println(letterT)
     }
+
+    @Test
+    fun findNodeWithInvalidOid() {
+        val emptyNode: Optional<OIDNode>? = service.getNode("1.notvalid")
+        println(emptyNode)
+        assert(!emptyNode!!.isPresent)
+    }
+
+
+    val emojis = mapOf(
+            ":-)" to "Smiley",
+            ":-D" to "Kaugthing",
+            ":v" to "Unenthused",
+            ":-))" to "Very Happy",
+            ":'-(" to "Crying",
+            ":-O" to "Suprise",
+            ":-*" to "Kiss",
+            ";-)" to "Wink")
+
+
+    private fun createNode(oid: String, bizKey: String, description: String):OIDNode {
+        val newNode = OIDNode(oid, bizKey)
+        newNode.description = description
+        val saved = service.registerNewOid(newNode)
+        return saved
+    }
+
+    private fun registerAlphabetOids(prefix: String) {
+        for (i in (1..26)) {
+            val character = (i+64).toChar() + ""
+            createNode(prefix + i, character, character)
+        }
+    }
+
+    private fun registerEmoticons(prefix: String) {
+        var i = 1
+        emojis.forEach { key, value -> createNode(prefix + i++, key, value)}
+    }
+
+
 }
