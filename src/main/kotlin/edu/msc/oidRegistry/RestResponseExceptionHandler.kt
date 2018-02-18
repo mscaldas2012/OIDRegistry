@@ -1,7 +1,8 @@
-package edu.msc.oid_registry
+package edu.msc.oidRegistry
 
-import edu.msc.oid_registry.domain.DataNotFoundException
-import edu.msc.oid_registry.model.ErrorMessage
+import edu.msc.oidRegistry.domain.ConflictException
+import edu.msc.oidRegistry.domain.DataNotFoundException
+import edu.msc.oidRegistry.model.ErrorMessage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
 import org.springframework.http.HttpStatus
@@ -28,4 +29,11 @@ class RestResponseExceptionHandler @Autowired constructor(var messageSource: Mes
         return ResponseEntity(error, HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(ConflictException::class)
+    fun handleConflict(ex: RuntimeException, request: HttpServletRequest): ResponseEntity<Any> {
+        val error = ErrorMessage(HttpStatus.CONFLICT.value(), request.requestURL.toString())
+        error.description = ex.message.toString()
+        error.exception = ex.javaClass.name
+        return ResponseEntity(error, HttpStatus.CONFLICT)
+    }
 }

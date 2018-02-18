@@ -1,4 +1,4 @@
-package edu.msc.oid_registry.model
+package edu.msc.oidRegistry.model
 
 import javax.persistence.*
 /**

@@ -1,6 +1,6 @@
-package edu.msc.oid_registry.service
+package edu.msc.oidRegistry.service
 
-import edu.msc.oid_registry.model.OIDNode
+import edu.msc.oidRegistry.model.OIDNode
 import junit.framework.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,7 +47,7 @@ class OIDNodeServiceTest {
         val saved = createNode(newOid, "Test", "Unit Testing")
         val test = service.getNode(newOid)?.get()
         test?.description = "Unit Test updated"
-        val updated = service.updateNode(test!!)
+        val updated = service.updateBizKey(test!!.oid, test!!.bizKey)
         println(updated.description)
 
     }
@@ -125,5 +125,11 @@ class OIDNodeServiceTest {
         emojis.forEach { key, value -> createNode(prefix + i++, key, value)}
     }
 
+    @Test
+    fun testFindParentOid() {
+        val childOid = "10"
+        val parent = childOid.substring(0, Math.max(childOid.lastIndexOf('.'), 0))
+        println("parent: ${parent} ")
+    }
 
 }

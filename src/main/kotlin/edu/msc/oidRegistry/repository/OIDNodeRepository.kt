@@ -1,8 +1,8 @@
-package edu.msc.oid_registry.repository
+package edu.msc.oidRegistry.repository
 
-import edu.msc.oid_registry.model.OIDNode
+import edu.msc.oidRegistry.model.OIDNode
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.util.*
 import javax.transaction.Transactional
@@ -15,9 +15,14 @@ import javax.transaction.Transactional
  */
 @Repository
 @Transactional(Transactional.TxType.MANDATORY)
-interface OIDNodeRepository : CrudRepository<OIDNode, String> {
+interface OIDNodeRepository : JpaRepository<OIDNode, String> {
 
     fun findByOidStartsWith(oid: String): List<OIDNode>
+
+    fun findByParent(parentOID: String): List<OIDNode>
+
+    @Query("FROM OIDNode n WHERE  (n.oid NOT LIKE %:parentOID)")
+    fun findChildrenOf(parentOID: String): List<OIDNode>
 
     fun findByBizKey(bizKey: String): List<OIDNode>
 

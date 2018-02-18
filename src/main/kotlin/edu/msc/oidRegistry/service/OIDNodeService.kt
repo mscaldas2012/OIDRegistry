@@ -1,7 +1,8 @@
-package edu.msc.oid_registry.service
+package edu.msc.oidRegistry.service
 
-import edu.msc.oid_registry.model.OIDNode
-import edu.msc.oid_registry.repository.OIDNodeRepository
+import edu.msc.oidRegistry.domain.DataNotFoundException
+import edu.msc.oidRegistry.model.OIDNode
+import edu.msc.oidRegistry.repository.OIDNodeRepository
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.transaction.Transactional
@@ -25,9 +26,16 @@ class OIDNodeService(val repo: OIDNodeRepository) {
     fun getNode(oid: String): Optional<OIDNode>? {
         return repo.findById(oid)
     }
-    //This method is to be called only by the Generator, if it allows the Biz Key to be udpated.
-    fun updateNode(node: OIDNode): OIDNode {
-        return repo.save(node)
+    //Needs to check if parent has a Generator and whether it allows the biz keys to be updated.
+    fun updateBizKey(oid: String, newbizKey: String): OIDNode {
+        val node = getNode(oid)
+        if (node!!.isPresent) {
+            node.get().bizKey = newbizKey
+            return repo.save(node.get())
+        } else {
+            throw DataNotFoundException("Node not found for OID ${oid}")
+        }
+
     }
 
     fun deleteNode(oid: String) {
@@ -35,8 +43,8 @@ class OIDNodeService(val repo: OIDNodeRepository) {
     }
 
     fun getChildrenOf(parentOID: String): List<OIDNode> {
-        val parentOIDWithSeg = if (parentOID.endsWith("."))  parentOID else parentOID + ".";
-        return repo.findByOidStartsWith(parentOIDWithSeg)
+        //val parentOIDWithSeg = if (parentOID.endsWith("."))  parentOID else parentOID + ".";
+        return repo.findByParent(parentOID)
     }
 
     fun getNodesByBizKey(bizKey: String): List<OIDNode> {

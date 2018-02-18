@@ -1,10 +1,11 @@
-package edu.msc.oid_registry.service
+package edu.msc.oidRegistry.service
 
-import edu.msc.oid_registry.domain.DataNotFoundException
-import edu.msc.oid_registry.model.GeneratorMetadata
-import edu.msc.oid_registry.model.OIDNode
-import edu.msc.oid_registry.repository.GeneratorMetadataRepository
-import edu.msc.oid_registry.repository.OIDNodeRepository
+import edu.msc.oidRegistry.domain.ConflictException
+import edu.msc.oidRegistry.domain.DataNotFoundException
+import edu.msc.oidRegistry.model.GeneratorMetadata
+import edu.msc.oidRegistry.model.OIDNode
+import edu.msc.oidRegistry.repository.GeneratorMetadataRepository
+import edu.msc.oidRegistry.repository.OIDNodeRepository
 import org.springframework.stereotype.Service
 import java.util.*
 import javax.transaction.Transactional
@@ -19,10 +20,12 @@ import javax.transaction.Transactional
 @Transactional
 class GeneratorService(val generatorMetadataRepository: GeneratorMetadataRepository, val oidRepository: OIDNodeRepository) {
 
-    //TODO::Check if there's a Generator for that Node - Only one Generator shall exist per Node!
     fun createNewGenerator(node: OIDNode, bizKeyDelimiter: String = "^", allowBizKeyUpdates: Boolean = false):GeneratorMetadata {
         val generator = GeneratorMetadata(node, bizKeyDelimiter, allowBizKeyUpdates)
-
+        val existent = this.getGeneratorForNode(node.oid)
+        if (existent!!.isPresent) {
+            throw ConflictException("Generator already register for Node ${node.oid}" )
+        }
         return generatorMetadataRepository.save(generator)
     }
 
@@ -30,14 +33,15 @@ class GeneratorService(val generatorMetadataRepository: GeneratorMetadataReposit
         return generatorMetadataRepository.findByNodeOid(oid)
     }
 
-    fun generateNewOid(parentNodeOid: String, bizKey: String): OIDNode {
+    fun generateNewOid(parentNodeOid: String, bizKey: String, description: String? = ""): OIDNode {
         //Get the Genrator for oid:
-        val findGen: Optional<GeneratorMetadata>? = this.getGeneratorForNode(parentNodeOid)
+        val findGen = this.getGeneratorForNode(parentNodeOid)
         if (!findGen!!.isPresent)
             throw DataNotFoundException("Unable to find Generator for Node ${parentNodeOid}")
 
         val generator = findGen.get()
         val newOid = OIDNode(generator.node.oid + "." + generator.nextChildSequenceNumber, bizKey)
+        newOid.description = description
         generator.nextChildSequenceNumber++
         generatorMetadataRepository.save(generator)
         return oidRepository.save(newOid)

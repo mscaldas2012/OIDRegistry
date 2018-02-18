@@ -111,6 +111,14 @@ paths:
        200:
          description: The Object that matches the given OID
 
+ /generator:
+    post:
+        tags:
+         - GENERATOR
+        summary: Creates a new Generator for a given Node.
+        responses:
+          201:
+            description: The Object that matches the given OID
 
  /generator/{OID}:
    parameters:
@@ -126,13 +134,7 @@ paths:
      responses:
        200:
          description: The Object that matches the given OID
-   post:
-     tags:
-      - GENERATOR
-     summary: Creates a new Generator for a given Node.
-     responses:
-       201:
-         description: The Object that matches the given OID
+
    put:
      tags:
       - GENERATOR
@@ -152,10 +154,10 @@ paths:
        409:
          description: Conflict. Stale version or other conflict.
 
- /generator/{OID}/generate:
+ /generator/{oid}/generate:
    parameters:
    - in: path
-     name: OID
+     name: oid
      type: string
      required: true
      description: The OID for the Node we are retrieving

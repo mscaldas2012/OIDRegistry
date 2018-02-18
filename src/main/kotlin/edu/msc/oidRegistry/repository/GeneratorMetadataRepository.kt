@@ -1,6 +1,6 @@
-package edu.msc.oid_registry.repository
+package edu.msc.oidRegistry.repository
 
-import edu.msc.oid_registry.model.GeneratorMetadata
+import edu.msc.oidRegistry.model.GeneratorMetadata
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.util.*

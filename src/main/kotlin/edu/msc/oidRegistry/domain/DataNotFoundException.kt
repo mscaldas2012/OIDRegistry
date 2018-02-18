@@ -1,4 +1,4 @@
-package edu.msc.oid_registry.domain
+package edu.msc.oidRegistry.domain
 
 import org.springframework.context.MessageSourceResolvable
 

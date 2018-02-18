@@ -1,8 +1,8 @@
-package edu.msc.oid_registry.controller
+package edu.msc.oidRegistry.controller
 
-import edu.msc.oid_registry.domain.DataNotFoundException
-import edu.msc.oid_registry.model.OIDNode
-import edu.msc.oid_registry.service.OIDNodeService
+import edu.msc.oidRegistry.domain.DataNotFoundException
+import edu.msc.oidRegistry.model.OIDNode
+import edu.msc.oidRegistry.service.OIDNodeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -29,21 +29,20 @@ class OIDRegistryController {
     }
 
     @GetMapping("/{oid:.+}")
-    fun getOID(@PathVariable oid: String): ResponseEntity<OIDNode>? {
-        var node =  service.getNode(oid)
+    fun getOID(@PathVariable oid: String): ResponseEntity<OIDNode> {
+        val node =  service.getNode(oid)
 
-        if(node?.isPresent!!) {
+        if(node!!.isPresent) {
             return ResponseEntity.ok(node.get())
         }
         else {
             throw  DataNotFoundException("Unable to find Object for OID " + oid)
         }
     }
+
     @GetMapping("/{oid}/children")
     fun getChildren(@PathVariable oid: String): ResponseEntity<List<OIDNode>>? {
         return ResponseEntity.ok(service.getChildrenOf(oid));
     }
-
-
 
 }

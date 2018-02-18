@@ -1,6 +1,7 @@
-package edu.msc.oid_registry.service
+package edu.msc.oidRegistry.service
 
-import edu.msc.oid_registry.model.OIDNode
+import edu.msc.oidRegistry.domain.ConflictException
+import edu.msc.oidRegistry.model.OIDNode
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,6 +31,22 @@ class GeneratorServiceTest {
 
         val loaded = generatorService.getGeneratorForNode(saved.oid)
         println("loaded: ${loaded}")
+    }
+
+    @Test
+    fun testCreateDuplicateGenerator() {
+        val saved = createNode("10.1." + System.currentTimeMillis(), "Test", "Unit Testing")
+        val genMD = generatorService.createNewGenerator(saved)
+        println(genMD)
+        //get Error when creating a second generator:
+        try {
+            val secondGenerator = generatorService.createNewGenerator(saved);
+            assert(false)
+        } catch (e: ConflictException) {
+            assert(true)
+            println("Generator not created!")
+        }
+
     }
 
     @Test

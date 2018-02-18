@@ -1,4 +1,4 @@
-package edu.msc.oid_registry
+package edu.msc.oidRegistry
 
 /**
  *
