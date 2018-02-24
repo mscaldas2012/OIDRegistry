@@ -23,4 +23,7 @@ data class GeneratorMetadata(@field:OneToOne(cascade = arrayOf(CascadeType.DETAC
     @Column
     var nextChildSequenceNumber: Int = 1
 
+    @Version
+    var version: Int = 1
+
 }

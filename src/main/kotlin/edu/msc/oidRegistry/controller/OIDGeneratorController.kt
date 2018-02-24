@@ -7,6 +7,7 @@ import edu.msc.oidRegistry.service.GeneratorService
 import edu.msc.oidRegistry.service.OIDNodeService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import java.util.*
 import javax.validation.Valid
 
 /**
@@ -38,4 +39,13 @@ class OIDGeneratorController {
         return generatorService.generateNewOid(oid, node.bizKey, node.description)
     }
 
+    @GetMapping("/{oid:.+}")
+    fun getGenerator(@PathVariable oid: String): Optional<GeneratorMetadata>? {
+        return generatorService.getGeneratorForNode(oid)
+    }
+
+    @DeleteMapping("{oid:.+}")
+    fun deleteGenerator(@PathVariable oid: String, @RequestParam version: Int) {
+        generatorService.delete(oid, version)
+    }
 }

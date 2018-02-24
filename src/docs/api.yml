@@ -113,12 +113,12 @@ paths:
 
  /generator:
     post:
-        tags:
-         - GENERATOR
-        summary: Creates a new Generator for a given Node.
-        responses:
-          201:
-            description: The Object that matches the given OID
+      tags:
+      - GENERATOR
+      summary: Creates a new Generator for a given Node.
+      responses:
+        201:
+          description: The Object that matches the given OID
 
  /generator/{OID}:
    parameters:
@@ -154,10 +154,10 @@ paths:
        409:
          description: Conflict. Stale version or other conflict.
 
- /generator/{oid}/generate:
+ /generator/{OID}/generate:
    parameters:
    - in: path
-     name: oid
+     name: OID
      type: string
      required: true
      description: The OID for the Node we are retrieving
@@ -211,8 +211,8 @@ definitions:
        type: integer
        description: counter for the next OID to be generated
      node:
+#       description: The Node this Generator is attached to. (The parent of all children nodes generated.)
        $ref: '#/definitions/OidNode'
-       description: The Node this Generator is attached to. (The parent of all children nodes generated.)
      allowKeyUpdates:
        type: boolean
        description: Whether the business keys can be updated for these Nodes.

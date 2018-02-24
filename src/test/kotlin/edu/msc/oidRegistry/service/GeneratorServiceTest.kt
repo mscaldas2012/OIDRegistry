@@ -64,6 +64,20 @@ class GeneratorServiceTest {
 
     }
 
+    @Test
+    fun testDeleteGenerator() {
+        val oid = "10.1." + System.currentTimeMillis()
+        val saved = createNode(oid, "Test", "Unit Testing")
+        println(saved)
+        val genMD = generatorService.createNewGenerator(saved)
+        println(genMD)
+        //try {
+            generatorService.delete(oid, 2) //Invalid version - should fail
+        //}
+        val deleted = generatorService.getGeneratorForNode(oid)
+        println("deleted: "  + deleted)
+        assert(!deleted!!.isPresent)
+    }
 
     private fun createNode(oid: String, bizKey: String, description: String): OIDNode {
         val newNode = OIDNode(oid, bizKey)

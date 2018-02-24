@@ -26,6 +26,7 @@ class GeneratorService(val generatorMetadataRepository: GeneratorMetadataReposit
         if (existent!!.isPresent) {
             throw ConflictException("Generator already register for Node ${node.oid}" )
         }
+        //TODO::What if creating Generator for a node that already has children? -Don't allow or allow and set nextSeq to a number bigger than the max OID number?
         return generatorMetadataRepository.save(generator)
     }
 
@@ -37,7 +38,7 @@ class GeneratorService(val generatorMetadataRepository: GeneratorMetadataReposit
         //Get the Genrator for oid:
         val findGen = this.getGeneratorForNode(parentNodeOid)
         if (!findGen!!.isPresent)
-            throw DataNotFoundException("Unable to find Generator for Node ${parentNodeOid}")
+            throw DataNotFoundException("Generator not found for oid ${parentNodeOid}")
 
         val generator = findGen.get()
         val newOid = OIDNode(generator.node.oid + "." + generator.nextChildSequenceNumber, bizKey)
@@ -46,6 +47,14 @@ class GeneratorService(val generatorMetadataRepository: GeneratorMetadataReposit
         generatorMetadataRepository.save(generator)
         return oidRepository.save(newOid)
 
+    }
+
+    fun delete(oid: String, version: Int) {
+        val gen = getGeneratorForNode(oid)
+        if (!gen!!.isPresent) {
+            throw DataNotFoundException("Generator not found for oid ${oid}")
+        }
+        generatorMetadataRepository.delete(gen!!.get())
     }
 
 }
