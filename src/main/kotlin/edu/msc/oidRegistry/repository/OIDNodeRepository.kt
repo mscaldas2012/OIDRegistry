@@ -2,7 +2,6 @@ package edu.msc.oidRegistry.repository
 
 import edu.msc.oidRegistry.model.OIDNode
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import java.util.*
 import javax.transaction.Transactional
@@ -21,11 +20,10 @@ interface OIDNodeRepository : JpaRepository<OIDNode, String> {
 
     fun findByParent(parentOID: String): List<OIDNode>
 
-    @Query("FROM OIDNode n WHERE  (n.oid NOT LIKE %:parentOID)")
-    fun findChildrenOf(parentOID: String): List<OIDNode>
+    fun findByBizKeyContains(bizKey: String): List<OIDNode>
 
-    fun findByBizKey(bizKey: String): List<OIDNode>
+    //@Query("from OIDNode n where n.oid like :parentOID%  and n.bizKey = :bizKey")
+    fun findByParentAndBizKey(parent: String, bizKey: String): Optional<OIDNode>?
 
-    @Query("from OIDNode n where n.oid like :parentOID%  and n.bizKey = :bizKey")
-    fun findByBizKeyAndParentOid(parentOID: String, bizKey: String): Optional<OIDNode>?
+    fun findByParentAndBizKeyContains(parent: String, bizKey: String): List<OIDNode>
 }

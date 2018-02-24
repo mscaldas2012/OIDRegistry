@@ -1,0 +1,291 @@
+{
+	"variables": [],
+	"info": {
+		"name": "OID Registry",
+		"_postman_id": "de3bdccf-1844-7813-c2c0-cae4e1d377b9",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Happy Path",
+			"description": "",
+			"item": [
+				{
+					"name": "Create new node",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/object/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"oid\": \"10.1\",\n\t\"bizKey\": \"PostManTest\",\n\t\"description\": \"First kotlin Test via Postman\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create a second node",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/object",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"oid\": \"10.2\",\n\t\"bizKey\": \"PostManTest\",\n\t\"description\": \"Second kotlin Test via Postman\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Node Created",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/object/10.1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"oid\": \"10.1\",\n\t\"bizKey\": \"PostManTest\",\n\t\"description\": \"First kotlin Test via Postman\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create Generator",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/generator",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"node\": {\n\t\t\"oid\": \"10.1\"\n\t},\n\t\"bizKeyDelimiter\": \"|\",\n\t\"allowKeyUpdates\": true\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Nodes ...",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/generator/10.1/generate",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bizKey\": \"A\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Nodes ... copy",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/generator/10.1/generate",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"First Letter of the alphabet\",\n    \"bizKey\": \"B\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Nodes ... copy copy",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/generator/10.1/generate",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"First Letter of the alphabet\",\n    \"bizKey\": \"C\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Children Nodes",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/object/12/children",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"oid\": \"10.1\",\n\t\"bizKey\": \"PostManTest\",\n\t\"description\": \"First kotlin Test via Postman\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Search By Biz key",
+					"request": {
+						"url": {
+							"raw": "http://localhost:8085/oid-registry/object/12/search?bizKey=Python",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8085",
+							"path": [
+								"oid-registry",
+								"object",
+								"12",
+								"search"
+							],
+							"query": [
+								{
+									"key": "bizKey",
+									"value": "Python",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"oid\": \"10.1\",\n\t\"bizKey\": \"PostManTest\",\n\t\"description\": \"First kotlin Test via Postman\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Error Handling",
+			"description": "",
+			"item": [
+				{
+					"name": "Invalid Payload - missing oid to create Node",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/object/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"bizKey\": \"InvalidPayload\",\n\t\"description\": \"Invalid payload Test via Postman\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid OID",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/object/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"oid\": \"a.b.1\",\n\t\"description\": \"Invalid OID Test via Postman\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Repeated",
+			"description": "",
+			"item": [
+				{
+					"name": "CreateNodes",
+					"request": {
+						"url": "http://localhost:8085/oid-registry/object/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"oid\": \"{{OID}}\",\n\t\"bizKey\": \"{{BIZKEY}}\",\n\t\"description\": \"{{DESCRIPTION}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

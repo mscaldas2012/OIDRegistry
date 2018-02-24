@@ -26,11 +26,10 @@ class OIDNodeService(val repo: OIDNodeRepository) {
     fun getNode(oid: String): Optional<OIDNode>? {
         return repo.findById(oid)
     }
-    //Needs to check if parent has a Generator and whether it allows the biz keys to be updated.
-    fun updateBizKey(oid: String, newbizKey: String): OIDNode {
+    fun updateDescription(oid: String, newDescription: String): OIDNode {
         val node = getNode(oid)
         if (node!!.isPresent) {
-            node.get().bizKey = newbizKey
+            node.get().description = newDescription
             return repo.save(node.get())
         } else {
             throw DataNotFoundException("Node not found for OID ${oid}")
@@ -38,7 +37,12 @@ class OIDNodeService(val repo: OIDNodeRepository) {
 
     }
 
-    fun deleteNode(oid: String) {
+    fun deleteNode(oid: String, version: Int) {
+        val node = getNode(oid)
+        if (!node!!.isPresent) {
+            throw DataNotFoundException("Node not found for OID ${oid}")
+        }
+        //TODO::Add version control for optimistic locking.
         repo.deleteById(oid)
     }
 
@@ -47,14 +51,18 @@ class OIDNodeService(val repo: OIDNodeRepository) {
         return repo.findByParent(parentOID)
     }
 
-    fun getNodesByBizKey(bizKey: String): List<OIDNode> {
-        return repo.findByBizKey(bizKey)
-    }
-
     fun getChildrenNodeByBizKey(parentOID: String, bizKey: String): Optional<OIDNode>? {
        //Make sure there's a dot at thend so not to get other branches!
-        val parentOIDWithSeg = if (parentOID.endsWith("."))  parentOID else parentOID + ".";
-        return repo.findByBizKeyAndParentOid(parentOIDWithSeg, bizKey)
+        //val parentOIDWithSeg = if (parentOID.endsWith("."))  parentOID else parentOID + "."
+        return repo.findByParentAndBizKey(parentOID, bizKey)
+    }
+
+    fun search(bizKey: String): List<OIDNode> {
+        return repo.findByBizKeyContains(bizKey)
+    }
+
+    fun searchChildren(oid: String, bizKey: String): List<OIDNode> {
+        return repo.findByParentAndBizKeyContains(oid, bizKey)
     }
 
 }

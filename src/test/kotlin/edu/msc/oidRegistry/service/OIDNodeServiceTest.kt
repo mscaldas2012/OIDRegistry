@@ -47,7 +47,7 @@ class OIDNodeServiceTest {
         val saved = createNode(newOid, "Test", "Unit Testing")
         val test = service.getNode(newOid)?.get()
         test?.description = "Unit Test updated"
-        val updated = service.updateBizKey(test!!.oid, test!!.bizKey)
+        val updated = service.updateDescription(test!!.oid, test.description!!)
         println(updated.description)
 
     }
@@ -59,7 +59,7 @@ class OIDNodeServiceTest {
         val test = service.getNode(newOid)
         assert(test?.isPresent == true)
         assertNotNull(test)
-        service.deleteNode(newOid)
+        service.deleteNode(newOid, 1)
         val deleted = service.getNode(newOid)
         assert(deleted?.isPresent == false)
 
@@ -76,7 +76,7 @@ class OIDNodeServiceTest {
     @Test
     fun getNodesByBizKey() {
         registerAlphabetOids("6.1.")
-        val letterC = service.getNodesByBizKey("C")
+        val letterC = service.search("C")
         println(letterC)
     }
 
@@ -94,6 +94,12 @@ class OIDNodeServiceTest {
         assert(!emptyNode!!.isPresent)
     }
 
+    @Test
+    fun searchNodes() {
+        registerEmoticons("6.1")
+        val emojiFound = service.searchChildren("6.1", ":-%")
+        emojiFound.forEach { e -> println(e) }
+    }
 
     val emojis = mapOf(
             ":-)" to "Smiley",
@@ -127,7 +133,7 @@ class OIDNodeServiceTest {
 
     @Test
     fun testFindParentOid() {
-        val childOid = "10"
+        val childOid = "10.1"
         val parent = childOid.substring(0, Math.max(childOid.lastIndexOf('.'), 0))
         println("parent: ${parent} ")
     }
